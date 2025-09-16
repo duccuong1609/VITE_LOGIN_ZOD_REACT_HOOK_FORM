@@ -1,4 +1,4 @@
-# 🚀 React Authentication Starter
+## 🚀 React Authentication Starter
 
 This project implements a simple **authentication flow** using:
 
