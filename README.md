@@ -339,5 +339,6 @@ export default function LoginForm() {
 * Role-based access control (admin, user)
 * Context phân tách: Nếu app lớn hơn, tách AuthContext chỉ chứa state user/token, còn phần logic fetch/login/logout có thể để trong custom hook (useAuth) để tránh context quá nặng.
 * Skeleton: Cậu để loading logic ở ProtectedLayout là chuẩn. Tuy nhiên nên wrap thêm Suspense (nếu có dynamic import) để tận dụng lazy loading.
-* Error boundary: Nếu fetch user lỗi (ví dụ token hết hạn) thì nên redirect ra login, tránh stuck ở màn skeleton.#   V I T E _ L O G I N _ Z O D _ R E A C T _ H O O K _ F O R M  
+* Error boundary: Nếu fetch user lỗi (ví dụ token hết hạn) thì nên redirect ra login, tránh stuck ở màn skeleton.#   V I T E _ L O G I N _ Z O D _ R E A C T _ H O O K _ F O R M 
+ 
  
