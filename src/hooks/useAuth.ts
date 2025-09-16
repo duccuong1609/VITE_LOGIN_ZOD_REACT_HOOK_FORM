@@ -1,7 +1,7 @@
 import { useRef, useCallback, useState } from "react";
 import authService from "@/services/auth.service";
 import type { LoginFormData } from "@/type";
-import type { UserProps } from "@/services/type";
+import type { IRefreshServiceParams, UserProps } from "@/services/type";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -22,12 +22,18 @@ const useAuth = () => {
       setAccessToken(res.accessToken);
       setRefreshToken(res.refreshToken);
 
-      localStorage.setItem("accessToken", res.accessToken);
-      localStorage.setItem("refreshToken", res.refreshToken);
+      if(data.rememberMe) {
+        localStorage.setItem("accessToken", res.accessToken);
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
+      else{
+        sessionStorage.setItem("accessToken", res.accessToken);
+        sessionStorage.setItem("refreshToken", res.refreshToken);
+      }
 
       fetchedUser.current = false;
 
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
   }, []);
 
@@ -36,11 +42,34 @@ const useAuth = () => {
     setRefreshToken(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
     setCurrentUser(null);
     setIsAuthenticated(false);
     fetchedUser.current = false;
     navigate("/login");
   } , []);
+
+  const handleRefreshToken = useCallback(async (data: IRefreshServiceParams) => {
+    try {
+      const res = await authService.getRefreshToken(data);
+      if (res.refreshToken) {
+        setAccessToken(res.accessToken);
+        setRefreshToken(res.refreshToken);
+        const localToken = localStorage.getItem("accessToken");
+        const sessionToken = sessionStorage.getItem("accessToken");
+        if (localToken) {
+          localStorage.setItem("accessToken", res.accessToken);
+        } else if (sessionToken) {
+          sessionStorage.setItem("accessToken", res.accessToken);
+        }
+      }
+    } catch (error) {
+      logout();
+      toast.error("Something went wrong with refresh token, please try again later.");
+      throw error;
+    }
+  }, [])
 
   const handleGetCurrentUser = useCallback(async () => {
     setIsLoading(true);
@@ -50,8 +79,8 @@ const useAuth = () => {
     }
     fetchedUser.current = true;
 
-    const token = localStorage.getItem("accessToken");
-    const refresh = localStorage.getItem("refreshToken");
+    const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    const refresh = localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
 
     if (!token || !refresh) throw new Error("Token not found");
     
@@ -67,6 +96,8 @@ const useAuth = () => {
       fetchedUser.current = false;
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("refreshToken");
       throw error;
     } finally {
       setIsLoading(false);
@@ -85,6 +116,7 @@ const useAuth = () => {
     logout,
     handleGetCurrentUser,
     currentUser,
+    handleRefreshToken
   };
 };
 

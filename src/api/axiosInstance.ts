@@ -7,7 +7,7 @@ export const msAxiosInstance = axios.create({
 
 // ✅ Interceptor để mỗi request đều tự động lấy token mới nhất
 msAxiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {

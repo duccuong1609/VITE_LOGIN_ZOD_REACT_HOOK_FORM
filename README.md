@@ -196,6 +196,29 @@ export default function LoginForm() {
   });
 ```
 
+## Example: Form request Axios
+
+```tsx
+  export async function request<K,T>(
+    url: string,
+    instance: "public" | "private" = "public",
+    body?: K,
+    method: string = "GET"
+  ): Promise<T> {
+    const axiosInstance = instance === "public" ? msPublicAxiosInstance : msAxiosInstance;
+    try {
+      const res = await axiosInstance({
+        method,
+        url,
+        data: body,
+      });
+      return res.data as T;
+    } catch (error) {
+      throw error; 
+    }
+  }
+```
+
 ---
 
 ## 📝 Example: Hook
@@ -319,6 +342,58 @@ export default function LoginForm() {
 </Card>
 ```
 
+--- 
+### RefreshToken
+
+# ProtectedLayout
+```tsx
+  // Async fetching interval api
+  useEffect(() => {
+    const token =
+      localStorage.getItem("refreshToken") ||
+      sessionStorage.getItem("refreshToken");
+
+    const data: IRefreshServiceParams = {
+      refreshToken: token ?? "",
+      expiresInMins: 30,
+    };
+
+    const refreshTokenInterval = setInterval(() => {
+      authState?.handleRefreshToken(data);
+    }, REFRESH_TOKEN_SECOND);
+
+    return () => clearInterval(refreshTokenInterval);
+  }, [hasToken, authState]);
+```
+# Hook
+```tsx
+  const handleRefreshToken = useCallback(async (data: IRefreshServiceParams) => {
+    try {
+      const res = await authService.getRefreshToken(data);
+      if (res.refreshToken) {
+        setAccessToken(res.accessToken);
+        setRefreshToken(res.refreshToken);
+        const localToken = localStorage.getItem("accessToken");
+        const sessionToken = sessionStorage.getItem("accessToken");
+        if (localToken) {
+          localStorage.setItem("accessToken", res.accessToken);
+        } else if (sessionToken) {
+          sessionStorage.setItem("accessToken", res.accessToken);
+        }
+      }
+    } catch (error) {
+      logout();
+      toast.error("Something went wrong with refresh token, please try again later.");
+      throw error;
+    }
+  }, [])
+```
+# Service
+```tsx
+  const getRefreshToken = async(payload: IRefreshServiceParams): Promise<RefreshProps> => {
+      return request<IRefreshServiceParams, RefreshProps>(AUTH_API.REFRESH_TOKEN, 'private', payload, 'POST')
+  }
+```
 ---
 
 ## ✅ Features
@@ -339,5 +414,4 @@ export default function LoginForm() {
 * Role-based access control (admin, user)
 * Context phân tách: Nếu app lớn hơn, tách AuthContext chỉ chứa state user/token, còn phần logic fetch/login/logout có thể để trong custom hook (useAuth) để tránh context quá nặng.
 * Skeleton: Cậu để loading logic ở ProtectedLayout là chuẩn. Tuy nhiên nên wrap thêm Suspense (nếu có dynamic import) để tận dụng lazy loading.
-* Error boundary: Nếu fetch user lỗi (ví dụ token hết hạn) thì nên redirect ra login, tránh stuck ở màn skeleton.#   V I T E _ L O G I N _ Z O D _ R E A C T _ H O O K _ F O R M  
- 
+* Error boundary: Nếu fetch user lỗi (ví dụ token hết hạn) thì nên redirect ra login, tránh stuck ở màn skeleton.

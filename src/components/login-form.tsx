@@ -74,10 +74,13 @@ export function LoginForm({
                     </p>
                   )}
                   <div className="flex items-center gap-3">
-                    <Input type="checkbox" className="w-4 h-4" id="terms" />
-                    <Label className="text-xs">
-                      Accept terms and conditions
-                    </Label>
+                    <Input
+                      {...register("rememberMe")}
+                      type="checkbox"
+                      className="w-4 h-4"
+                      id="terms"
+                    />
+                    <Label className="text-xs">Remember me</Label>
                   </div>
                 </div>
                 <Button type="submit" className="w-full">

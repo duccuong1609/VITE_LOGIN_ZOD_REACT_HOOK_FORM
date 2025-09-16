@@ -2,6 +2,17 @@ export interface ISignInServiceParams {
   email?: string;
   password?: string;
   token?: string;
+  rememberMe?: boolean;
+}
+
+export interface IRefreshServiceParams {
+  refreshToken?: string;
+  expiresInMins?: number;
+}
+
+export interface RefreshProps {
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface ISignInProps {

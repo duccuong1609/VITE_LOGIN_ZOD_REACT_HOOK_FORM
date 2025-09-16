@@ -1,9 +1,9 @@
 import { msAxiosInstance, msPublicAxiosInstance } from "./axiosInstance";
 
-export async function request<T>(
+export async function request<K,T>(
   url: string,
   instance: "public" | "private" = "public",
-  body?: unknown,
+  body?: K,
   method: string = "GET"
 ): Promise<T> {
   const axiosInstance = instance === "public" ? msPublicAxiosInstance : msAxiosInstance;
