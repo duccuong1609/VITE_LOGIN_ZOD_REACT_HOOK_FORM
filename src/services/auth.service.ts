@@ -4,7 +4,8 @@ import type { IRefreshServiceParams, ISignInProps, ISignInServiceParams, Refresh
 export const AUTH_API = {
     LOGIN: '/auth/login',
     CURRENT_USER: '/auth/me',
-    REFRESH_TOKEN: '/auth/refresh'
+    REFRESH_TOKEN: '/auth/refresh',
+    USER_ID: '/users/'
 }
 
 const login = async(payload: ISignInServiceParams): Promise<ISignInProps> => {
@@ -15,6 +16,10 @@ const getCurrentUser = async(): Promise<UserProps> => {
     return request<void, ISignInProps>(AUTH_API.CURRENT_USER, 'private')
 }
 
+const getUserById = async(id: string): Promise<UserProps> => {
+    return request<void, ISignInProps>(AUTH_API.USER_ID+`/${id}`, 'private')
+}
+
 const getRefreshToken = async(payload: IRefreshServiceParams): Promise<RefreshProps> => {
     return request<IRefreshServiceParams, RefreshProps>(AUTH_API.REFRESH_TOKEN, 'private', payload, 'POST')
 }
@@ -22,7 +27,8 @@ const getRefreshToken = async(payload: IRefreshServiceParams): Promise<RefreshPr
 const authService = {
     login,
     getCurrentUser,
-    getRefreshToken
+    getRefreshToken,
+    getUserById
 }
 
 export default authService

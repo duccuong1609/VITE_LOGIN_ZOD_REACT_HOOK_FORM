@@ -7,6 +7,7 @@ import ProtectedLayout from "./pages/(protected)/layout";
 import PublicLayout from "./pages/(public)/layout";
 import AuthProvider from "./layout/AuthProvider";
 import { ToastContainer } from "react-toastify";
+import UserPage from "./pages/(protected)/user";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             </Route>
             <Route element={<ProtectedLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/user/:id" element={<UserPage />} />
             </Route>
           </Routes>
         </AuthProvider>

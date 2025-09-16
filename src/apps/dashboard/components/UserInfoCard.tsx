@@ -13,10 +13,10 @@ import type { UserProps } from "@/services/type";
 type UserInfoCardProps = {
   isLoading: boolean;
   user: UserProps;
-  logout: () => void;
+  logout?: () => void;
 };
 
-const UserInfoCard = ({ isLoading, user, logout }: UserInfoCardProps) => {
+const UserInfoCard = ({ isLoading = true, user, logout }: UserInfoCardProps) => {
   return (
     <AnimatePresence mode="wait">
       {isLoading ? (
@@ -26,7 +26,7 @@ const UserInfoCard = ({ isLoading, user, logout }: UserInfoCardProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <Card className="max-w-md mx-auto shadow-md rounded-2xl">
+          <Card className="min-w-[72rem] min-h-[36rem] mx-auto shadow-md rounded-2xl">
             <CardHeader className="flex flex-col items-center gap-2">
               <Skeleton className="w-24 h-24 rounded-full animate-pulse" />
               <Skeleton className="h-6 w-32 animate-pulse" />

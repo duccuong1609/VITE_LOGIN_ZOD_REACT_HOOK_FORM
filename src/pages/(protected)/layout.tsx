@@ -33,6 +33,9 @@ const ProtectedLayout = () => {
   }, [hasToken, authState]);
 
   useEffect(() => {
+    if (authState?.currentUser) {
+      return;
+    }
     if (!hasToken) {
       authState?.logout();
     } else if (authState && !authState.isAuthenticated) {

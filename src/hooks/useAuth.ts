@@ -105,6 +105,30 @@ const useAuth = () => {
     
   }, []);
 
+  const handleGetUserById = useCallback(async (id: string) => {
+    setIsLoading(true);
+
+    const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    const refresh = localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
+
+    if (!token || !refresh) throw new Error("Token not found");
+    
+    try {
+      const res = await authService.getUserById(id);
+      if (res) {
+        fetchedUser.current = true;
+        return res;
+      }
+    } catch (error) {
+      toast.error("Something went wrong, please try again later.");
+      fetchedUser.current = false;
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+    
+  }, []);
+
   return {
     accessToken,
     isLoading,
@@ -116,7 +140,8 @@ const useAuth = () => {
     logout,
     handleGetCurrentUser,
     currentUser,
-    handleRefreshToken
+    handleRefreshToken,
+    handleGetUserById
   };
 };
 
