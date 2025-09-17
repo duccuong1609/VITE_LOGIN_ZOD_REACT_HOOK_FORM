@@ -415,3 +415,108 @@ export default function LoginForm() {
 * Context phân tách: Nếu app lớn hơn, tách AuthContext chỉ chứa state user/token, còn phần logic fetch/login/logout có thể để trong custom hook (useAuth) để tránh context quá nặng.
 * Skeleton: Cậu để loading logic ở ProtectedLayout là chuẩn. Tuy nhiên nên wrap thêm Suspense (nếu có dynamic import) để tận dụng lazy loading.
 * Error boundary: Nếu fetch user lỗi (ví dụ token hết hạn) thì nên redirect ra login, tránh stuck ở màn skeleton.
+
+## Quy trình Build → Push → Deploy với Docker & docker-compose
+
+### 1. Build Image ở Local
+
+Trong thư mục có `Dockerfile`, chạy lệnh sau:
+
+```bash
+docker build -t vite-login:latest .
+```
+
+### 2. Tag lại Image theo tên Docker Hub của bạn
+
+```bash
+docker tag vite-login:latest duccuong1609/vite-login:latest
+```
+
+### 3. Login Docker Hub
+
+```bash
+docker login
+```
+
+### 4. Push Image lên Docker Hub
+
+```bash
+docker push duccuong1609/vite-login:latest
+```
+
+---
+
+### 🖥️ Trên Server (Ubuntu)
+
+### 5. Kiểm tra Docker
+
+```bash
+docker --version
+```
+
+#### 6. Cài docker-compose (nếu chưa có)
+
+**Cách 1: Bản cũ (V1, lệnh `docker-compose`):**
+
+```bash
+sudo apt update
+sudo apt install docker-compose -y
+```
+
+**Cách 2: Bản mới (V2, lệnh `docker compose`):**
+
+```bash
+sudo apt update
+sudo apt install docker-compose-plugin -y
+```
+
+### 7. Viết file `docker-compose.yml`
+
+Ví dụ (chạy trên port 8080 để tránh đụng port 80 đang bận):
+
+```yaml
+version: '3.9'
+
+services:
+  frontend:
+    image: duccuong1609/vite-login:latest
+    container_name: vite-login
+    ports:
+      - "8080:80"
+    restart: always
+```
+
+### 8. Khởi chạy Service
+
+```bash
+docker-compose up -d
+```
+
+**Hoặc nếu dùng Compose V2:**
+
+```bash
+docker compose up -d
+```
+
+👉 Compose sẽ tự pull image từ Docker Hub (nếu local chưa có) và chạy container luôn.
+
+### 9. Kiểm tra Container
+
+```bash
+docker ps
+```
+
+### 10. Kiểm tra Log Container
+
+```bash
+docker logs -f vite-login
+```
+
+### 11. Xóa Container & Image (nếu muốn test lại)
+
+```bash
+docker rm -f vite-login
+docker rmi duccuong1609/vite-login:latest
+```
+
+📌 Sau đó chạy lại `docker-compose up -d` → Docker sẽ tự pull image từ Docker Hub và chạy lại app.
