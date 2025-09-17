@@ -6,8 +6,6 @@ WORKDIR /app
 
 # Copy package.json và lock file (nếu có) trước để cache dependency
 COPY package*.json ./
-COPY pnpm-lock.yaml* ./
-COPY yarn.lock* ./
 
 # Cài đặt dependencies
 RUN npm install
