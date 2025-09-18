@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   frontend:
-    image: duccuong1609/vite-login:latest
+    image: duccuong1609/vite-login-1:latest
     container_name: vite-login
     ports:
       - "80:80"
